@@ -18,7 +18,7 @@ public class A {
 		String node = "MiCasing";
 		String factory = "B2";
 
-		String Lot = "000001597544/B21";
+		String Lot = "000001597750/9";
 
 		if(!Pattern.compile(".*[a-zA-Z]+.*").matcher(Lot).matches()) { //无条码工单
 			System.out.println("无字母");

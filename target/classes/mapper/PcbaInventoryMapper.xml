@@ -295,7 +295,7 @@ VALUES
 		INSERT INTO [HT_InterfaceExchange].[dbo].[DL_PCBAInventory]
 		(ID,WO,WOQuantity,PartNumber,Location,State,AvailableQuantity,AvailableBatch,CreateUser,CreateTime,workcenter,Factory,UID,plant)
 		VALUES
-		(NEWID(),#{Wo},#{WoQty},#{Pn},#{sendLocation},'0',#{Qty},#{Batch},#{User},getdate(),#{workcenter},#{Factory},#{UID},#{Plant})
+		(NEWID(),#{Wo},#{WoQty},#{Pn},#{sendLocation},'0',#{Qty},#{Batch},#{User},getdate(),#{workcenter},#{Factory},#{UID},#{Plant},#{313_Status},#{315_Status})
 	</insert>
 	<!-- MI收料 -->
 	
