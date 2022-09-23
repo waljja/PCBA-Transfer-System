@@ -67,8 +67,9 @@ order by createtime desc
 
 	<!-- 公用sql -->
 	<!-- 过账表处理 -->
-	<select id="RxCobData" parameterType="String" resultMap="SenDRecData">
-			SELECT top 1 A.UID AS 'UID',A.PartNumber AS 'Pn',A.Quantity AS 'Qty',A.FromStock as sendLocation,A.ToStock AS 'RecLocation',A.Plant AS 'Factory',A.PO_NUMBER AS 'Wo',D.SAPREF_DOC AS 'REF_DOC',D.SAPREF_YEAR AS 'REF_DOC_YR' FROM xTend_MaterialTransactions A 
+		<select id="RxCobData" parameterType="String" resultMap="SenDRecData">
+			SELECT top 1 A.UID AS 'UID',A.PartNumber AS 'Pn',A.Quantity AS 'Qty',A.FromStock as sendLocation,A.ToStock AS 'RecLocation',A.Plant AS 'Factory',A.PO_NUMBER AS 'Wo',D.SAPREF_DOC AS 'REF_DOC',D.SAPREF_YEAR AS 'REF_DOC_YR'
+			FROM xTend_MaterialTransactions A
 	 		LEFT JOIN xTend_MaterialTransactionsGroup B ON A.TransactionHistoryId = B.TransactionHistoryId
 	 		LEFT JOIN xTend_MaterialTransactionsSummary C ON B.BatchId = C.BatchId AND B.ItemId = C.ItemId
 	 		LEFT JOIN xTend_MaterialTxnLog D ON  lower(C.BatchId) =  lower(D.BatchId) AND C.ItemId = D.ItemId
@@ -90,27 +91,36 @@ order by createtime desc
 		 	INSERT INTO [HT_InterfaceExchange].[dbo].[xTend_MaterialTransactions]
 			([TransactionHistoryId],[PartNumber],[UID],[Quantity],[FromStock],[ToStock],[TransactionUser],[TransactionTime],[RecordStatus],[TransactionType],[RFCTemplateID],[Plant],[PO_NUMBER],RefDocNo,DocHeader,ERPFromStock,ERPToStock)
 			VALUES
-			(NEWID(),#{pn},#{UID},#{Qty},#{sendLocation},#{RecLocation},#{User},GETDATE(),'0','315','Z_AEGIS_GOODSMVT_TRANSFER',#{Factory},#{Wo},#{REF_DOC},#{REF_DOC_YR},#{sendLocation},#{RecLocation})
+			(NEWID(),#{pn},#{UID},#{Qty},#{sendLocation},#{RecLocation},#{User},GETDATE(),'999','315','Z_AEGIS_GOODSMVT_TRANSFER',#{Factory},#{Wo},#{REF_DOC},#{REF_DOC_YR},#{sendLocation},#{RecLocation})
 			END
 		</insert>
 	<!-- 过账表处理 -->
 	
-	<!-- 发料先进先出 -->
+		<!-- 发料先进先出 -->
+		<!--  根据型号和工厂查出在库的工单号，然后根据工单号再按批次号大小排序	-->
 		<select id="PcbaFIFO" parameterType="String" resultMap="SenDRecData">
-		select UID,PartNumber as Pn,Location from [HT_InterfaceExchange].[dbo].DL_PCBAInventory where UID in(
-		select top 1 UID from [HT_InterfaceExchange].[dbo].DL_PCBAInventory where State = 1 and PartNumber like  UPPER('%'+#{Lot}+'%') and plant = #{Plant} group by WO,AvailableBatch,UID order by WO,cast(AvailableBatch as int)
-		)and State = 1
+			if OBJECT_ID('tempdb..##t1') is not null drop table ##t1
+
+			select * into ##t1 from DL_PCBAInventory
+			where
+				WO in (select distinct WO from DL_PCBAInventory where State = 1 and PartNumber like UPPER('%'+#{Lot}+'%') and plant = #{Plant})
+			and
+				State in (1,2)
+
+			select TOP 1 UID,AvailableBatch as Batch,PartNumber as Pn,Location,CreateTime,State from DL_PCBAInventory
+			where
+				WO in ( select TOP 1 WO from ##t1 order by CreateTime )
+			and
+				State = 1
+			group by
+				UID,AvailableBatch,PartNumber,Location,CreateTime,State
+			order by
+				cast(AvailableBatch as int)
 		</select>
+
 		<select id="FuzzyPn" parameterType="String" resultType="java.util.HashMap">
 		select PartNumber from [HT_InterfaceExchange].[dbo].[DL_PCBAInventory] where PartNumber like UPPER('%'+#{Pn}+'%') and State = 1 and plant = #{plant} and workcenter = #{workcenter} group by PartNumber
 		</select>
-			<!-- IF NOT EXISTS   
-	(select *from [HT_InterfaceExchange].[dbo].[DL_PCBAInventory] where UID = #{Lot} and State = 1 and AvailableBatch in (
-	select top 1 AvailableBatch from [HT_InterfaceExchange].[dbo].[DL_PCBAInventory] where WO = #{Wo} and State = 1 order by AvailableBatch
-	))
-	BEGIN    
-	select top 1 UID ,Location as RecLocation from [HT_InterfaceExchange].[dbo].[DL_PCBAInventory] where WO = #{Wo} and State = 1 order by AvailableBatch
-	END -->
 		
 	<!-- 发料先进先出 -->
 	<!-- 查询收发料信息 -->
@@ -211,17 +221,17 @@ order by createtime desc
    INSERT INTO [HT_InterfaceExchange].[dbo].[xTend_MaterialTransactions]
 		([TransactionHistoryId],[PartNumber],[UID],[Quantity],[ToStock],[TransactionUser],[TransactionTime],[RecordStatus],[TransactionType],[RFCTemplateID],[Plant],[PO_NUMBER],ERPToStock)
 		VALUES
-		(NEWID(),#{Pn},#{UID},#{Qty},#{sendLocation},#{User},GETDATE(),'0','101','Z_AEGIS_GOODSMVT_GR',#{Factory},#{Wo},#{sendLocation})
+		(NEWID(),#{Pn},#{UID},#{Qty},#{sendLocation},#{User},GETDATE(),'999','101','Z_AEGIS_GOODSMVT_GR',#{Factory},#{Wo},#{sendLocation})
   END
 	</insert>
 	<!-- 101入库 -->
 	
-<insert id="InsertSN" parameterType="String">
-	INSERT INTO [HT_InterfaceExchange].[dbo].[DL_Lot-SN]
-(ID,SN,Lot,LotQty,WO,WERKS,CreateUser,CreateTime)
-VALUES
-(NEWID(),#{Sn},#{Lot},#{LotQty},#{WO},#{WERKS},#{CreateUser},GETDATE())
-</insert>
+	<insert id="InsertSN" parameterType="String">
+		INSERT INTO [HT_InterfaceExchange].[dbo].[DL_Lot-SN]
+	(ID,SN,Lot,LotQty,WO,WERKS,CreateUser,CreateTime)
+	VALUES
+	(NEWID(),#{Sn},#{Lot},#{LotQty},#{WO},#{WERKS},#{CreateUser},GETDATE())
+	</insert>
 	<!-- 查询批号是否在库存中 -->
 	<select id="InventoryState" parameterType="String" resultType="String">
 		SELECT TOP 1 1 AS 'all' FROM [HT_InterfaceExchange].[dbo].[DL_PCBAInventory] WHERE UID = #{Lot} AND State = 1
@@ -235,7 +245,7 @@ VALUES
    INSERT INTO [HT_InterfaceExchange].[dbo].[xTend_MaterialTransactions]
 		([TransactionHistoryId],[PartNumber],[UID],[Quantity],[FromStock],[ToStock],[TransactionUser],[TransactionTime],[RecordStatus],[TransactionType],[RFCTemplateID],[Plant],[PO_NUMBER],ERPFromStock,ERPToStock)
 		VALUES
-		(NEWID(),#{pn},#{UID},#{Qty},#{sendLocation},#{RecLocation},#{User},GETDATE(),'0','313','Z_AEGIS_GOODSMVT_TRANSFER',#{Factory},#{Wo},#{sendLocation},#{RecLocation})
+		(NEWID(),#{pn},#{UID},#{Qty},#{sendLocation},#{RecLocation},#{User},GETDATE(),'999','313','Z_AEGIS_GOODSMVT_TRANSFER',#{Factory},#{Wo},#{sendLocation},#{RecLocation})
   END
 	</insert>
 	<!-- 发料存入过账表 -->

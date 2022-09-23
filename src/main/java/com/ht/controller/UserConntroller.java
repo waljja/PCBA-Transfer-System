@@ -47,31 +47,6 @@ public class UserConntroller {
      * 用户登录
      *
      * @param name 用户账号
-     * @param paw 用户密码 
-     * @return 
-     */
-	//,method=RequestMethod.GET
-//	@ApiResponses({@ApiResponse(code = 400, message = "请求参数没有填好"),
-//				   @ApiResponse(code = 404, message = "请求路径没有或者页面跳转路径不正确")})
-//	@ApiOperation(value="登入账号", notes="根据账号密码进行登入")
-//	@RequestMapping(value="/logintest",method=RequestMethod.POST)
-//    public CommonResult<String> logintest(@RequestBody UserEntity user) {
-//		ResultCode result = null;
-//		String[] strArray = null; 
-//		UserEntity state = userService.SelAccount(user.getAccount(),user.getPassword());
-//		if (checkObjFieldIsNotNull(state)) {
-//		   strArray = state.getPermissions().split(",");
-//		}else {
-//			result = ResultCode.LOGINGFAILED;
-//			return CommonResult.failed(result);
-//		}
-//        return CommonResult.successLogin("登入成功",state.getFactory(),state.getNode(),state.getName(),strArray);
-//	}
-	
-	/**
-     * 用户登录
-     *
-     * @param name 用户账号
      * @param paw 用户密码
      * @return 
      */

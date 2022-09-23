@@ -134,21 +134,6 @@ public class SqlApi {
 			return sbsql.toString();
 		}
 		
-		//是否已经下架
-		public static String isTakeDown(String UID){
-		   StringBuilder sbsql = new StringBuilder();
-		   sbsql.append("select * from HT_InterfaceExchange.[dbo].[DL_PCBAInventory] where UID= '"+ UID + "' ");
-
-		   return sbsql.toString();
-		}
-
-		//库存下架
-		public static String inventoryTakeDown(String UID){
-		   StringBuilder sbsql = new StringBuilder();
-		   sbsql.append("update HT_InterfaceExchange.[dbo].[DL_PCBAInventory] set State='3' where UID= '"+ UID + "' and State = 1 ");
-		   return sbsql.toString();
-		}
-		
 		//修改OB发料
 		public static String UpObSend(String Lot,String User,String ObType){
 			StringBuilder sbsql = new StringBuilder();
