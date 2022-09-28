@@ -219,7 +219,8 @@ public class PcbaInventoryConntroller {
 		SAPServiceUtil sapUtil = new SAPServiceUtil();
 		ResultCode result = null;
 		SendRecDataVo sap = null;
-		System.out.println(user);
+		SendRecDataVo earliestWOInfo;
+		SendRecDataVo latestBatchInfo;
 
 		if (node.equals("REC")) { // 收料
 			sap = PcbaService.SelFactory(Lot, "0");
@@ -259,7 +260,7 @@ public class PcbaInventoryConntroller {
 			}else { // 普通员工FIFO管控
 				if (!ProductModel.equals("") || !ProductModel.equals(null)) {
 					sap = null;
-					sap = PcbaService.PcbaFIFO(ProductModel, factory); // 根据工单+Lot号大小排序来进行FIFO管控（先发小工单的小批次）
+					sap = PcbaService.findNextLot(ProductModel, factory); // 根据绑库时间+批次号进行管控，查出应发Lot数据
 				}
 
 				if (checkObjFieldIsNotNull(sap)) {
@@ -1628,10 +1629,11 @@ public class PcbaInventoryConntroller {
 		Con51DB con51db = new Con51DB();
 		Con100HR con100hr = new Con100HR();
 		ResultSet rs1, rs2;
+
 		try {
 			if (factory.equals("B1")) {
 				if (node.equals("smt")) {
-					rs1 = con100hr.executeQuery(SqlApi.SmtFifo(Wo)); // 查询库存表中工单批次最大的Lot号
+					rs1 = con100hr.executeQuery(SqlApi.SmtFifo(Wo)); // 查询库存表中工单在库批次最大的Lot号（修改）
 
 					if (rs1.next()) { // 已入库（Inventory表存在的数据）
 						rs2 = con100hr.executeQuery(SqlApi.SmtObFifo(

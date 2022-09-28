@@ -96,27 +96,57 @@ order by createtime desc
 		</insert>
 	<!-- 过账表处理 -->
 	
-		<!-- 发料先进先出 -->
-		<!--  根据型号和工厂查出在库的工单号，然后根据工单号再按批次号大小排序	-->
-		<select id="PcbaFIFO" parameterType="String" resultMap="SenDRecData">
-			if OBJECT_ID('tempdb..##t1') is not null drop table ##t1
+	<!-- 发料先进先出 -->
+	<!--  根据型号和工厂查出在库的工单号，然后根据工单号再按批次号大小排序	-->
+	<select id="PcbaFIFO" parameterType="String" resultMap="SenDRecData">
+		if OBJECT_ID('tempdb..##t1') is not null drop table ##t1
 
-			select * into ##t1 from DL_PCBAInventory
-			where
-				WO in (select distinct WO from DL_PCBAInventory where State = 1 and PartNumber like UPPER('%'+#{Lot}+'%') and plant = #{Plant})
-			and
-				State in (1,2)
+		select * into ##t1 from DL_PCBAInventory
+		where
+			WO in (select distinct WO from DL_PCBAInventory where State = 1 and PartNumber like UPPER('%'+#{Lot}+'%') and plant = #{Plant})
+		and
+			State in (1,2)
 
-			select TOP 1 UID,AvailableBatch as Batch,PartNumber as Pn,Location,CreateTime,State from DL_PCBAInventory
-			where
-				WO in ( select TOP 1 WO from ##t1 order by CreateTime )
-			and
-				State = 1
-			group by
-				UID,AvailableBatch,PartNumber,Location,CreateTime,State
-			order by
-				cast(AvailableBatch as int)
-		</select>
+		select TOP 1 UID,AvailableBatch as Batch,PartNumber as Pn,Location,CreateTime,State from DL_PCBAInventory
+		where
+			WO in ( select TOP 1 WO from ##t1 order by CreateTime )
+		and
+			State = 1
+		group by
+			UID,AvailableBatch,PartNumber,Location,CreateTime,State
+		order by
+			cast(AvailableBatch as int)
+	</select>
+
+	<!--  查找下一按顺序应该发料的Lot信息  -->
+	<!--  先查出该型号在库工单的所有记录（包括State为0、1、2、3）  -->
+	<!--  再查找所有在库工单，所有批次中，绑库时间最早的工单号	 -->
+	<!--  然后绑库最早的工单号按批次排序  -->
+	<select id="findNextLot" parameterType="String" resultMap="SenDRecData">
+		if OBJECT_ID('tempdb..##t1') is not null drop table ##t1
+
+		select
+		    *
+		into
+		    ##t1
+		from
+		    DL_PCBAInventory
+		where
+			WO in (select distinct WO from DL_PCBAInventory where State = 1 and PartNumber like UPPER('%'+#{Lot}+'%') and plant = #{Plant})
+
+		select TOP 1
+			UID,AvailableBatch as Batch,PartNumber as Pn,Location,CreateTime,State
+		from
+			DL_PCBAInventory
+		where
+			WO in (select TOP 1 WO from ##t1 order by CreateTime)
+		and
+			State = 1
+		group by
+			UID,AvailableBatch,PartNumber,Location,CreateTime,State
+		order by
+			cast(AvailableBatch as int)
+	</select>
 
 		<select id="FuzzyPn" parameterType="String" resultType="java.util.HashMap">
 		select PartNumber from [HT_InterfaceExchange].[dbo].[DL_PCBAInventory] where PartNumber like UPPER('%'+#{Pn}+'%') and State = 1 and plant = #{plant} and workcenter = #{workcenter} group by PartNumber

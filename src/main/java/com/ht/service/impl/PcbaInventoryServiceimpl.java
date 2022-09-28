@@ -124,6 +124,12 @@ public class PcbaInventoryServiceimpl implements PcbaInventoryService{
 	}
 
 	@Override
+	public SendRecDataVo findNextLot(String Lot,String Plant) {
+		// TODO Auto-generated method stub
+		return mapper.findNextLot(Lot,Plant);
+	}
+
+	@Override
 	public SendRecDataVo RxCobData(String Lot,String Type) {
 		// TODO Auto-generated method stub
 		return mapper.RxCobData(Lot,Type);

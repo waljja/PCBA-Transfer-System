@@ -38,6 +38,8 @@ public interface PcbaInventoryMapper {
 	SendRecDataVo SelFactory(@Param("Lot")String Lot,@Param("model")String model);
 	//先进先出
 	SendRecDataVo PcbaFIFO(@Param("Lot")String Lot,@Param("Plant")String Plant);
+	//查找下一按顺序应该发料的Lot信息
+	SendRecDataVo findNextLot(@Param("Lot")String Lot,@Param("Plant")String Plant);
 	//更改库存表收料状态
 	int UpStatus(String Lot);
 	//获取SN明细

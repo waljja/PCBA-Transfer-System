@@ -6,6 +6,7 @@ public class SendRecDataVo {
 	private String WoQty;
 	private String Pn;
 	private String UID;
+	private String state;
 	private String Location;
 	private String sendLocation;
 	private String RecLocation;

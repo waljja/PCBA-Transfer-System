@@ -3,9 +3,9 @@
 	<classpathentry kind="src" output="target/classes" path="src/main/java"/>
 	<classpathentry excluding="**" including="**/*.java" kind="src" output="target/classes" path="src/main/resources"/>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
-	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources"/>
+	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test"/>
 	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/zhangyue/Desktop/新建文件夹/sapjco3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/dingguozhao/Desktop/sapjco3.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

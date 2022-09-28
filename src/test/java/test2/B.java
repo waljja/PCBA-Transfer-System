@@ -1,28 +1,14 @@
 package test2;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import com.ht.util.*;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.regex.Pattern;
-
-import org.junit.Test;
-
-import com.ht.api.ObSendRecType;
-import com.ht.api.ResultCode;
-import com.ht.controller.PcbaInventoryConntroller;
-import com.ht.util.Con100HR;
-import com.ht.util.Con51DB;
-import com.ht.util.Con72DB;
-import com.ht.util.Con75DB;
-import com.ht.util.SAPServiceUtil;
-import com.ht.util.SqlApi;
 
 public class B {
 
-	@Test
 	public void test() throws ParseException {
 		SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date date1 = formatter.parse("2022-06-30 17:00:00.000");

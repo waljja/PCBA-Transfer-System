@@ -40,23 +40,26 @@ public interface PcbaInventoryService {
 	// 查询批次是否在库存中
 	String InventoryState(String Lot);
 	//更改库存表收料状态
-		int UpStatus(String Lot);
-		//获取SN明细
-		List<Map<String,Object>>QRYSmtDataMap(String Lot);
+	int UpStatus(String Lot);
+	//获取SN明细
+	List<Map<String,Object>>QRYSmtDataMap(String Lot);
 	
 	//存入313过账表
-		int SendSmtplugin313(SendRecDataVo SendRecData);
+	int SendSmtplugin313(SendRecDataVo SendRecData);
 		
-		//存入smt发料库存表
-		int SendSmtInsert(SendRecDataVo SendRecData);
+	//存入smt发料库存表
+	int SendSmtInsert(SendRecDataVo SendRecData);
 		
-		//更新批次在库存中状态
-		int InventoryStatus(String Lot,String model);
-		//查询收发料信息
-		SendRecDataVo SelFactory(String Lot,String model);
-		
-		//先进先出
-		SendRecDataVo PcbaFIFO(String Lot,String Plant);
+	//更新批次在库存中状态
+	int InventoryStatus(String Lot,String model);
+	//查询收发料信息
+	SendRecDataVo SelFactory(String Lot,String model);
+
+	//先进先出
+	SendRecDataVo PcbaFIFO(String Lot,String Plant);
+
+	//查找下一按顺序应该发料的Lot信息
+	SendRecDataVo findNextLot(String Lot,String Plant);
 
 		//COB 收料
 		SendRecDataVo RxCobData(String Lot,String Type);

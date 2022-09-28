@@ -1,16 +1,11 @@
 package test2;
 
-import static org.junit.Assert.*;
+import com.ht.util.Con100HR;
 
 import java.sql.ResultSet;
 
-import org.junit.Test;
-
-import com.ht.util.Con100HR;
-
 public class C {
 
-	@Test
 	public void test() {
 		Con100HR con100hr = new Con100HR();
 		ResultSet rs,rs1;
