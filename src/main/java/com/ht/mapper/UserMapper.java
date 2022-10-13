@@ -1,9 +1,11 @@
 package com.ht.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.ht.entity.UserEntity;
 
+@Mapper
 public interface UserMapper {
 	
 	/**

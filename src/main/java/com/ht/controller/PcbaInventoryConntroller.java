@@ -490,11 +490,12 @@ public class PcbaInventoryConntroller {
 					} else if (SendRecData.getSendLocation().equals("BS82")
 							|| SendRecData.getSendLocation().equals("BS8G")) {
 						state3 = PcbaService.RxMiInsert315(SendRecData);
+						System.out.println(state3);
 					}
 
-					state1 = PcbaService.RxCobplugin315(SendRecData); // 插入过账表进行315过账
+					//state1 = PcbaService.RxCobplugin315(SendRecData); // 插入过账表进行315过账
 
-					if (state1 > 0 && state3 > 0) {
+					if ( state3 > 0) { // state1 > 0 &&
 						PcbaService.UpStatus(Lot); // 设置过账信息为315已接收
 						InsertOb(Lot,UserName,ObSendRecType.CASINGREC.getTypeName(),false);
 

@@ -3,12 +3,14 @@ package com.ht.mapper;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.ht.vo.SapClosingTime;
 import com.ht.vo.SendRecDataVo;
 import com.ht.vo.TotalVo;
 
+@Mapper
 public interface PcbaInventoryMapper {
 	String specialPn(String pn);
 	

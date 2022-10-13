@@ -120,4 +120,27 @@
 		</dependency>
 
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.mybatis.generator</groupId>
+				<artifactId>mybatis-generator-maven-plugin</artifactId>
+				<version>1.3.2</version>
+				<dependencies>
+					<dependency>
+						<groupId>com.microsoft.sqlserver</groupId>
+						<artifactId>mssql-jdbc</artifactId>
+						<version>6.4.0.jre7</version>
+					</dependency>
+				</dependencies>
+				<configuration>
+					<configurationFile>
+						${basedir}/src/main/resources/generatorIEConfig.xml
+					</configurationFile>
+					<overwrite>true</overwrite>
+					<verbose>true</verbose>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
