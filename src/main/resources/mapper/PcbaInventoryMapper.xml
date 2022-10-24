@@ -119,8 +119,8 @@ order by createtime desc
 	</select>
 
 	<!--  查找下一按顺序应该发料的Lot信息  -->
-	<!--  先查出该型号在库工单的所有记录（包括State为0、1、2、3）  -->
-	<!--  再查找所有在库工单，所有批次中，绑库时间最早的工单号	 -->
+	<!--  先查出该型号在库工单(一个工单中含有已绑库的Lot)的所有记录（包括State为0、1、2、3）  -->
+	<!--  再查找所有在库工单，所有批次中，绑库时间最早的工单号  -->
 	<!--  然后绑库最早的工单号按批次排序  -->
 	<select id="findNextLot" parameterType="String" resultMap="SenDRecData">
 		if OBJECT_ID('tempdb..##t1') is not null drop table ##t1
