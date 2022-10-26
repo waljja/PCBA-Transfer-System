@@ -33,28 +33,28 @@ public class SqlApi {
 		StringBuilder sbsql = new StringBuilder();
 		if(StartTime.equals("")||EndTime.equals("")){
 			sbsql.append("select PS.WO,PS.WOQTY,PS.PartNumber,SendingBatch,SendingBatchQTY,SendingUser,SendingTime,SendLocation,(CASE WHEN PS.Status = '1' THEN '已发送'else '已接收' END)as Status,ReceiveUser,ReceiveTime,RecLocation,(CASE WHEN workcenter = '1' THEN 'SMT'WHEN workcenter = '2' THEN 'COB'WHEN workcenter = '3' THEN 'MI'WHEN workcenter = '4' THEN 'Casing' ELSE '' END)as workcenter,plant " +
-  " from DL_PCBAInventory PIT right join DL_PCBASMT PS on PIT.UID = PS.UID " +
-  " where (PIT.State = 0 or PIT.State =1)" +
-  " union all" +
-  " select PC.WO,PC.WOQTY,PC.PartNumber,SendingBatch,SendingBatchQTY,SendingUser,SendingTime,SendLocation,(CASE WHEN PC.Status = '1' THEN '已发送'else '已接收' END)as Status,ReceiveUser,ReceiveTime,RecLocation,(CASE WHEN workcenter = '1' THEN 'SMT'WHEN workcenter = '2' THEN 'COB'WHEN workcenter = '3' THEN 'MI'WHEN workcenter = '4' THEN 'Casing' ELSE '' END)as workcenter,plant " +
-  " from DL_PCBAInventory PIT right join DL_PCBACOB PC on PIT.UID = PC.UID " +
-  " where (PIT.State = 0 or PIT.State =1)" +
-  " union all" +
-  " select PM.WO,PM.WOQTY,PM.PartNumber,SendingBatch,SendingBatchQTY,SendingUser,SendingTime,SendLocation,(CASE WHEN PM.Status = '1' THEN '已发送'else '已接收' END)as Status,ReceiveUser,ReceiveTime,RecLocation,(CASE WHEN workcenter = '1' THEN 'SMT'WHEN workcenter = '2' THEN 'COB'WHEN workcenter = '3' THEN 'MI'WHEN workcenter = '4' THEN 'Casing' ELSE '' END)as workcenter,plant " +
-  " from DL_PCBAInventory PIT right join DL_PCBAMI PM on PIT.UID = PM.UID " +
-  " where (PIT.State = 0 or PIT.State =1)");
+				" from DL_PCBAInventory PIT right join DL_PCBASMT PS on PIT.UID = PS.UID " +
+				" where (PIT.State = 0 or PIT.State =1)" +
+				" union all" +
+				" select PC.WO,PC.WOQTY,PC.PartNumber,SendingBatch,SendingBatchQTY,SendingUser,SendingTime,SendLocation,(CASE WHEN PC.Status = '1' THEN '已发送'else '已接收' END)as Status,ReceiveUser,ReceiveTime,RecLocation,(CASE WHEN workcenter = '1' THEN 'SMT'WHEN workcenter = '2' THEN 'COB'WHEN workcenter = '3' THEN 'MI'WHEN workcenter = '4' THEN 'Casing' ELSE '' END)as workcenter,plant " +
+				" from DL_PCBAInventory PIT right join DL_PCBACOB PC on PIT.UID = PC.UID " +
+				" where (PIT.State = 0 or PIT.State =1)" +
+				" union all" +
+				" select PM.WO,PM.WOQTY,PM.PartNumber,SendingBatch,SendingBatchQTY,SendingUser,SendingTime,SendLocation,(CASE WHEN PM.Status = '1' THEN '已发送'else '已接收' END)as Status,ReceiveUser,ReceiveTime,RecLocation,(CASE WHEN workcenter = '1' THEN 'SMT'WHEN workcenter = '2' THEN 'COB'WHEN workcenter = '3' THEN 'MI'WHEN workcenter = '4' THEN 'Casing' ELSE '' END)as workcenter,plant " +
+				" from DL_PCBAInventory PIT right join DL_PCBAMI PM on PIT.UID = PM.UID " +
+				" where (PIT.State = 0 or PIT.State =1)");
 		}else {
 			sbsql.append("select PS.WO,PS.WOQTY,PS.PartNumber,SendingBatch,SendingBatchQTY,SendingUser,SendingTime,SendLocation,(CASE WHEN PS.Status = '1' THEN '已发送'else '已接收' END)as Status,ReceiveUser,ReceiveTime,RecLocation,(CASE WHEN workcenter = '1' THEN 'SMT'WHEN workcenter = '2' THEN 'COB'WHEN workcenter = '3' THEN 'MI'WHEN workcenter = '4' THEN 'Casing' ELSE '' END)as workcenter,plant " +
-					  " from DL_PCBAInventory PIT right join DL_PCBASMT PS on PIT.UID = PS.UID " +
-					  " where (PIT.State = 0 or PIT.State =1)and PS.CreateTime >='"+StartTime+" 00:00:01' and PS.CreateTime<='"+EndTime+" 23:59:59'" +
-					  " union all" +
-					  " select PC.WO,PC.WOQTY,PC.PartNumber,SendingBatch,SendingBatchQTY,SendingUser,SendingTime,SendLocation,(CASE WHEN PC.Status = '1' THEN '已发送'else '已接收' END)as Status,ReceiveUser,ReceiveTime,RecLocation,(CASE WHEN workcenter = '1' THEN 'SMT'WHEN workcenter = '2' THEN 'COB'WHEN workcenter = '3' THEN 'MI'WHEN workcenter = '4' THEN 'Casing' ELSE '' END)as workcenter,plant " +
-					  " from DL_PCBAInventory PIT right join DL_PCBACOB PC on PIT.UID = PC.UID " +
-					  " where (PIT.State = 0 or PIT.State =1)and PC.CreateTime >='"+StartTime+" 00:00:01' and PC.CreateTime<='"+EndTime+" 23:59:59'" +
-					  " union all" +
-					  " select PM.WO,PM.WOQTY,PM.PartNumber,SendingBatch,SendingBatchQTY,SendingUser,SendingTime,SendLocation,(CASE WHEN PM.Status = '1' THEN '已发送'else '已接收' END)as Status,ReceiveUser,ReceiveTime,RecLocation,(CASE WHEN workcenter = '1' THEN 'SMT'WHEN workcenter = '2' THEN 'COB'WHEN workcenter = '3' THEN 'MI'WHEN workcenter = '4' THEN 'Casing' ELSE '' END)as workcenter,plant " +
-					  " from DL_PCBAInventory PIT right join DL_PCBAMI PM on PIT.UID = PM.UID " +
-					  " where (PIT.State = 0 or PIT.State =1)and PM.CreateTime >='"+StartTime+" 00:00:01' and PM.CreateTime<='"+EndTime+" 23:59:59'");	
+				" from DL_PCBAInventory PIT right join DL_PCBASMT PS on PIT.UID = PS.UID " +
+				" where (PIT.State = 0 or PIT.State =1)and PS.CreateTime >='"+StartTime+" 00:00:01' and PS.CreateTime<='"+EndTime+" 23:59:59'" +
+				" union all" +
+				" select PC.WO,PC.WOQTY,PC.PartNumber,SendingBatch,SendingBatchQTY,SendingUser,SendingTime,SendLocation,(CASE WHEN PC.Status = '1' THEN '已发送'else '已接收' END)as Status,ReceiveUser,ReceiveTime,RecLocation,(CASE WHEN workcenter = '1' THEN 'SMT'WHEN workcenter = '2' THEN 'COB'WHEN workcenter = '3' THEN 'MI'WHEN workcenter = '4' THEN 'Casing' ELSE '' END)as workcenter,plant " +
+				" from DL_PCBAInventory PIT right join DL_PCBACOB PC on PIT.UID = PC.UID " +
+				" where (PIT.State = 0 or PIT.State =1)and PC.CreateTime >='"+StartTime+" 00:00:01' and PC.CreateTime<='"+EndTime+" 23:59:59'" +
+				" union all" +
+				" select PM.WO,PM.WOQTY,PM.PartNumber,SendingBatch,SendingBatchQTY,SendingUser,SendingTime,SendLocation,(CASE WHEN PM.Status = '1' THEN '已发送'else '已接收' END)as Status,ReceiveUser,ReceiveTime,RecLocation,(CASE WHEN workcenter = '1' THEN 'SMT'WHEN workcenter = '2' THEN 'COB'WHEN workcenter = '3' THEN 'MI'WHEN workcenter = '4' THEN 'Casing' ELSE '' END)as workcenter,plant " +
+				" from DL_PCBAInventory PIT right join DL_PCBAMI PM on PIT.UID = PM.UID " +
+				" where (PIT.State = 0 or PIT.State =1)and PM.CreateTime >='"+StartTime+" 00:00:01' and PM.CreateTime<='"+EndTime+" 23:59:59'");
 		}
 		return sbsql.toString();
 	}
@@ -82,69 +82,71 @@ public class SqlApi {
 		sbsql.append("select LotSN as SN,ASSLot as Lot from Lot where ASSLot= '"+ Lot + "' ");
 		return sbsql.toString();
 	}
-	//PCBA COB 
+	// 根据工单取入库时间最晚的UID（COB）
 	public static String CobFifo(String Wo){
 		StringBuilder sbsql = new StringBuilder();
-		sbsql.append("SELECT top 1 UID FROM [HT_InterfaceExchange].[dbo].[DL_PCBAInventory]where WO = '"+Wo+"' order by CreateTime desc");
+		sbsql.append("SELECT top 1 UID FROM [HT_InterfaceExchange].[dbo].[DL_PCBAInventory] where WO = '"+Wo+"' order by CreateTime desc");
+
 		return sbsql.toString();
 	}
-	//OB FIFO Lot号
+	// COB
 	public static String CobObFifo(String Lot,String Wo,String Remark){
 		StringBuilder sbsql = new StringBuilder();
+
 		if(Remark.equals("")){
-			sbsql.append("select top 1 FGSN from Handover where CreateDate >(select CreateDate from Handover where FGSN = '"+Lot+"') and  FGSN like '"+Wo+"%'  order by CreateDate ");
+			sbsql.append("select top 1 FGSN from Handover where CreateDate >(select CreateDate from Handover where FGSN = '"+Lot+"') and  FGSN like '"+Wo+"%' and CHARINDEX('-', FGSN) = 0  order by CreateDate ");
 		}else {
-			sbsql.append("select top 1 FGSN from Handover where CreateDate >(select CreateDate from Handover where FGSN = '"+Lot+"'and Remark = '"+Remark+"') and  FGSN like '"+Wo+"%' and Remark = '"+Remark+"' order by CreateDate ");
+			sbsql.append("select top 1 FGSN from Handover where CreateDate >(select CreateDate from Handover where FGSN = '"+Lot+"'and Remark = '"+Remark+"') and  FGSN like '"+Wo+"%' and CHARINDEX('-', FGSN) = 0 and Remark = '"+Remark+"' order by CreateDate ");
 		}
+
 		return sbsql.toString();
 	}
 	//OB 第一个 Lot号
 	public static String CobObFirst(String Wo,String Remark){
 		StringBuilder sbsql = new StringBuilder();
+
 		if(Remark.equals("")){
-			System.out.println(123);
-			sbsql.append("select top 1 FGSN from Handover where FGSN like '"+Wo+"%' order by CreateDate ");
+			sbsql.append("select top 1 FGSN from Handover where FGSN like '"+Wo+"%' and CHARINDEX('-', FGSN) = 0 order by CreateDate ");
 		}else {
-			System.out.println(456);
-			sbsql.append("select top 1 FGSN from Handover where FGSN like '"+Wo+"%' and Remark = '"+Remark+"' order by CreateDate ");
+			sbsql.append("select top 1 FGSN from Handover where FGSN like '"+Wo+"%' and CHARINDEX('-', FGSN) = 0 and Remark = '"+Remark+"' order by CreateDate ");
 		}
-		
+
 		return sbsql.toString();
 	}
 	
-		//PCBA SMT
-		public static String SmtFifo(String Wo){
-			StringBuilder sbsql = new StringBuilder();
-			sbsql.append("select top 1 UID from HT_InterfaceExchange.[dbo].[DL_PCBAInventory] where WO = '"+Wo+"' order by cast(AvailableBatch as int) desc");
-			
-			return sbsql.toString();
-		}
-		//找到下一个按顺序应该入库的SN号
-		public static String SmtObFifo(String NewSN, String Wo){
-			StringBuilder sbsql = new StringBuilder();
-			sbsql.append("select top 1 NewSN from [HT_GenericTester].[dbo].[PP_SMTFIFOPrint] where PrintTime >(select top 1 PrintTime from [HT_GenericTester].[dbo].[PP_SMTFIFOPrint] where NewSN = '"+NewSN+"' order by PrintTime desc) and  NewSN like '"+Wo+"%' order by PrintTime");
-			
-			return sbsql.toString();
-		}
-		//找到工单的第一个SN号
-		public static String SmtObFirst(String Wo){
-			StringBuilder sbsql = new StringBuilder();
-			sbsql.append("select top 1 NewSN from [HT_GenericTester].[dbo].[PP_SMTFIFOPrint] where NewSN like '"+Wo+"%' order by PrintTime ");
-			
-			return sbsql.toString();
-		}
-		
-		//修改OB发料
-		public static String UpObSend(String Lot,String User,String ObType){
-			StringBuilder sbsql = new StringBuilder();
-			sbsql.append("update Handover set SendUserId = '"+User+"',SendSpecificationId = '"+ObType+"',FGStatus = '0',SendTime = GETDATE() where FGSN = '"+Lot+"'");
-			return sbsql.toString();
-		}
-		
-		//修改OB收料
-		public static String UpObRec(String Lot,String User,String ObType){
-			StringBuilder sbsql = new StringBuilder();
-			sbsql.append("update Handover set ReceiveUserId = '"+User+"',ReceiveSpecificationId = '"+ObType+"',FGStatus = '1',ReceiveTime = GETDATE() where FGSN='"+Lot+"'");
-			return sbsql.toString();
-		}
+	//PCBA SMT
+	public static String SmtFifo(String Wo){
+		StringBuilder sbsql = new StringBuilder();
+		sbsql.append("select top 1 UID from HT_InterfaceExchange.[dbo].[DL_PCBAInventory] where WO = '"+Wo+"' order by cast(AvailableBatch as int) desc");
+
+		return sbsql.toString();
+	}
+	//找到下一个按顺序应该入库的SN号
+	public static String SmtObFifo(String NewSN, String Wo){
+		StringBuilder sbsql = new StringBuilder();
+		sbsql.append("select top 1 NewSN from [HT_GenericTester].[dbo].[PP_SMTFIFOPrint] where PrintTime >(select top 1 PrintTime from [HT_GenericTester].[dbo].[PP_SMTFIFOPrint] where NewSN = '"+NewSN+"' order by PrintTime desc) and  NewSN like '"+Wo+"%' order by PrintTime");
+
+		return sbsql.toString();
+	}
+	//找到工单的第一个SN号
+	public static String SmtObFirst(String Wo){
+		StringBuilder sbsql = new StringBuilder();
+		sbsql.append("select top 1 NewSN from [HT_GenericTester].[dbo].[PP_SMTFIFOPrint] where NewSN like '"+Wo+"%' order by PrintTime ");
+
+		return sbsql.toString();
+	}
+
+	//修改OB发料
+	public static String UpObSend(String Lot,String User,String ObType){
+		StringBuilder sbsql = new StringBuilder();
+		sbsql.append("update Handover set SendUserId = '"+User+"',SendSpecificationId = '"+ObType+"',FGStatus = '0',SendTime = GETDATE() where FGSN = '"+Lot+"'");
+		return sbsql.toString();
+	}
+
+	//修改OB收料
+	public static String UpObRec(String Lot,String User,String ObType){
+		StringBuilder sbsql = new StringBuilder();
+		sbsql.append("update Handover set ReceiveUserId = '"+User+"',ReceiveSpecificationId = '"+ObType+"',FGStatus = '1',ReceiveTime = GETDATE() where FGSN='"+Lot+"'");
+		return sbsql.toString();
+	}
 }

@@ -1,11 +1,9 @@
 package com.ht.entity;
 
 import io.swagger.annotations.ApiModel;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.Date;
 
-@Mapper
 @ApiModel(value = "SMT发料实体")
 public class PCBASMT {
     /**

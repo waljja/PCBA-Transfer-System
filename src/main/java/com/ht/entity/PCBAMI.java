@@ -1,11 +1,9 @@
 package com.ht.entity;
 
 import io.swagger.annotations.ApiModel;
-import org.apache.ibatis.annotations.Mapper;
 
 import java.util.Date;
 
-@Mapper
 @ApiModel(value = "MI发料实体，存储MI发料相关字段")
 public class PCBAMI {
     /**

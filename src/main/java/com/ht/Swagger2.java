@@ -16,8 +16,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * @version 1.0.0
  * @date 3/5/22 下午12:02.
  */
-@Configuration //该注解表示这是一个配置类(其实就是名字上区别于@controller@service@mapper 这些)
-@EnableSwagger2 // 注解表示开启swagger
+@Configuration
+@EnableSwagger2
 public class Swagger2 {
 
 	/****
@@ -36,22 +36,6 @@ public class Swagger2 {
                 .paths(PathSelectors.any())
                 .build();
     }
-    
-    /****
-     * 后台管理接口配置
-     * @return
-     */
-   /* @Bean
-    public Docket getBackgroundDocket() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .apiInfo(apiInfo())
-                .groupName("BackgroundApi")
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.gyd.flower.background"))
-                .paths(PathSelectors.any())
-                .build();
-    }*/
-
     
     /***
      * 构建 api文档的详细信息函数
