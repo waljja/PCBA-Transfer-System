@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+  <!-- Microsoft SQL Server数据库驱动路径 -->
+  <classPathEntry location="D:/apache-maven-3.6.2/repository/com/microsoft/sqlserver/mssql-jdbc/6.4.0.jre7" />
+  
+  <!-- 上下文环境配置 -->
+  <context id="Mybatis3Context" targetRuntime="MyBatis3">
+  	<!-- 数据库URL、账号配置 -->
+    <jdbcConnection driverClass="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+        connectionURL="jdbc:sqlserver://172.31.2.100;DatabaseName=HT_InterfaceExchange"
+        userId="Aegis-sa"
+        password="ABC789_">
+    </jdbcConnection>
+
+	<!-- 实体类生成地址 -->
+    <javaModelGenerator targetPackage="com.ht.entity" targetProject="src/main/java">
+      <property name="enableSubPackages" value="false" />
+      <property name="trimStrings" value="true" />
+    </javaModelGenerator>
+
+	<!-- Mapper.xml文件生成地址 -->
+    <sqlMapGenerator targetPackage="mapper"  targetProject="src/main/resources">
+      <property name="enableSubPackages" value="false" />
+    </sqlMapGenerator>
+
+	<!-- Mapper接口文件生成地址 -->
+    <javaClientGenerator type="XMLMAPPER" targetPackage="com.ht.mapper" targetProject="src/main/java">
+      <property name="enableSubPackages" value="false" />
+    </javaClientGenerator>
+
+	<!-- 数据库表映射配置 -->
+<!--    <table tableName="DL_PCBAInventory" domainObjectName="PCBAInventory" >-->
+<!--      <property name="useActualColumnNames" value="true"/>-->
+<!--      <columnOverride column="workcenter" property="workCenter" />-->
+<!--      <columnOverride column="313_Status" property="status313" />-->
+<!--      <columnOverride column="315_Status" property="status315" />-->
+<!--    </table>-->
+    <table tableName="xTend_MaterialTransactions" domainObjectName="Transaction" >
+      <property name="useActualColumnNames" value="true"/>
+    </table>
+    <table tableName="xTend_MaterialTransactionsGroup" domainObjectName="TransactionGroup" >
+      <property name="useActualColumnNames" value="true"/>
+    </table>
+    <table tableName="xTend_MaterialTransactionsSummary" domainObjectName="TransactionSummary" >
+      <property name="useActualColumnNames" value="true"/>
+    </table>
+    <table tableName="xTend_MaterialTxnLog" domainObjectName="TransactionLog" >
+      <property name="useActualColumnNames" value="true"/>
+    </table>
+
+  </context>
+</generatorConfiguration>

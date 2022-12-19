@@ -221,10 +221,8 @@ public class PcbaInventoryConntroller {
 		SendRecDataVo sap = null;
 		SendRecDataVo earliestWOInfo;
 		SendRecDataVo latestBatchInfo;
-
 		if (node.equals("REC")) { // 收料
 			sap = PcbaService.SelFactory(Lot, "0");
-
 			try {
 				if (checkObjFieldIsNotNull(sap)) {
 					sap.setRecLocation(sapUtil.getSAPPN(sap.getPn(), sap.getFactory()));
@@ -235,14 +233,12 @@ public class PcbaInventoryConntroller {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-
 			return CommonResult.success(sap);
 		} else { // 发料
 			if(Constants.isNames(user)){ // 特殊员工跳顺序发板权限
 				if(!Lot.equals("")){ // Lot不为空则查询Lot数据
 					sap = null;
 					sap = PcbaService.SelFactory(Lot, "1");
-
 					try {
 						if (checkObjFieldIsNotNull(sap)) {
 							sap.setRecLocation(sapUtil.getSAPPN(sap.getPn(),
@@ -255,14 +251,12 @@ public class PcbaInventoryConntroller {
 						e.printStackTrace();
 					}
 				}
-
 				return CommonResult.success(sap);
 			}else { // 普通员工FIFO管控
 				if (!ProductModel.equals("") || !ProductModel.equals(null)) {
 					sap = null;
 					sap = PcbaService.findNextLot(ProductModel, factory); // 根据绑库时间+批次号进行管控，查出应发Lot数据
 				}
-
 				if (checkObjFieldIsNotNull(sap)) {
 					if (!sap.getUID().equals(Lot)) { // 不符合FIFO规则或者是选中型号后Lot为空
 						if (!Lot.equals("") && PcbaService.UidState(Lot).equals("0")) { // Lot已扫描
@@ -282,7 +276,6 @@ public class PcbaInventoryConntroller {
 					} else { // 符合FIFO规则
 						sap = null;
 						sap = PcbaService.SelFactory(Lot, "1"); // 查工单信息
-
 						try {
 							if (checkObjFieldIsNotNull(sap)) {
 								sap.setRecLocation(sapUtil.getSAPPN(sap.getPn(), sap.getFactory()));
@@ -294,12 +287,10 @@ public class PcbaInventoryConntroller {
 							e.printStackTrace();
 						}
 					}
-
 					return CommonResult.success(sap);
 				} else { // 此型号不存在或者没有待发的料
 					sap = null;
 					sap = PcbaService.SelFactory(Lot, "1");
-
 					try {
 						if (checkObjFieldIsNotNull(sap)) {
 							sap.setRecLocation(sapUtil.getSAPPN(sap.getPn(), sap.getFactory()));
@@ -311,7 +302,6 @@ public class PcbaInventoryConntroller {
 						e.printStackTrace();
 					}
 				}
-
 				return CommonResult.success(sap);
 			}
 		}
@@ -580,11 +570,9 @@ public class PcbaInventoryConntroller {
 		int State1 = 0;
 		int state2 = 0;
 		int state3 = 0;
-
 		if (node.equals("smt")) {
 			if (Model) {
 				SapClosingTime sapTime = PcbaService.SapSuspended(); //查询sap运行开始、结束时间
-
 				if (getDate(sapTime.getStartTime(), sapTime.getEndTime())) { //判断是否在SAP运行期间
 					SendRecData = PcbaService.RxCobData(Lot, "101"); //SAP在线模式
 				} else {
@@ -593,13 +581,10 @@ public class PcbaInventoryConntroller {
 			} else {
 				SendRecData = PcbaService.Off_RxCobData(Lot, "101");
 			}
-
 			if (checkObjFieldIsNotNull(SendRecData)) {
 				State1 = PcbaService.InventoryStatus(Lot, "0");
-
 				if (State1 > 0) {
 					SendRecData = PcbaService.BatchData(Lot.substring(0, 12),Lot); // 库存表State更新为0（已发）
-
 					if (checkObjFieldIsNotNull(SendRecData)) {
 						SendRecData.setUser(User);
 						SendRecData.setRecLocation(
@@ -608,10 +593,8 @@ public class PcbaInventoryConntroller {
 										SendRecData.getFactory()));
 						state2 = PcbaService.SendSmtInsert(SendRecData); // 插入smt发料信息到smt表
 						state3 = PcbaService.SendSmtplugin313(SendRecData); // 313过账
-
 						if (state2 > 0 && state3 > 0) {
 							InsertOb(Lot, User, ObSendRecType.SMTSEND.getTypeName(), true);
-
 							return CommonResult.success("SMT发板成功!");
 						} else {
 							return CommonResult.failed("该Lot号已发过板(Smt)！");
@@ -626,9 +609,9 @@ public class PcbaInventoryConntroller {
 				return CommonResult.failed("该Lot号101入库SAP过账不成功，请在外挂系统检查原因！");
 			}
 		} else if (node.equals("cob")) {
+			// 查 101 是否过账
 			if (Model) {
 				SapClosingTime sapTime = PcbaService.SapSuspended();
-
 				if (getDate(sapTime.getStartTime(), sapTime.getEndTime())) {
 					SendRecData = PcbaService.RxCobData(Lot, "101");
 				} else {
@@ -638,21 +621,20 @@ public class PcbaInventoryConntroller {
 				SendRecData = PcbaService.Off_RxCobData(Lot, "101");
 			}
 			if (checkObjFieldIsNotNull(SendRecData)) {
+				// 更新库存表 313 发送状态
 				int state = PcbaService.InventoryStatus(Lot, "0");
-
 				if (state > 0) {
 					SendRecData = PcbaService.BatchData(Lot.substring(0, 12), Lot);
-
 					if (checkObjFieldIsNotNull(SendRecData)) {
 						SendRecData.setUser(User);
 						SendRecData.setRecLocation(sapUtil.getSAPPN(
 								SendRecData.getPn(), SendRecData.getFactory()));
+						// 存入 COB 发料表
 						State1 = PcbaService.SendCobInsert(SendRecData);
+						// 插入 313 过账信息
 						state2 = PcbaService.SendSmtplugin313(SendRecData);
-
 						if (State1 > 0 && state2 > 0) {
 							InsertOb(Lot, User, ObSendRecType.COBSEND.getTypeName(), true);
-
 							return CommonResult.success("COB发料成功");
 						} else {
 							return CommonResult.failed("该Lot号已发过板(Cob)！");
@@ -768,13 +750,11 @@ public class PcbaInventoryConntroller {
 				}else { //有条码工单报废批次数量扣减
 					SendRecData = PcbaService.QRYSmtData(Lot);
 				}
-
 				if (checkObjFieldIsNotNull(SendRecData)) { //有数据
 					if (!SendRecData.getPn().startsWith("620")) {
 						return CommonResult.failed("请用对应账号做101入库");
 					}
 					SendRecData.setUser(User);
-
 					if(SendRecData.getPn().indexOf("00DR1")!=-1 || SendRecData.getPn().indexOf("00DR3")!=-1) {
 						if(Location.equals("BS51")){
 							SendRecData.setSendLocation(Location);
@@ -788,17 +768,14 @@ public class PcbaInventoryConntroller {
 							return CommonResult.failed("B1 1100工厂的型号只能入BS81仓");
 						}
 					}
-
 					SendRecData.setFactory(SendRecData.getPn().indexOf("00DR1")!=-1 || SendRecData.getPn().indexOf("00DR3")!=-1 ? "5000" :"1100");
 					System.out.println("aaa:"+SendRecData.getPlant());
 					System.out.println("bbb:"+SendRecData.getFactory());
 					state1 = PcbaService.SendSmtplugin101(SendRecData); // 101入库
-
 					if (state1 > 0) {
 						if (Pattern.compile("(?i)[a-z]").matcher(Lot).find()) {
 							List<Map<String, Object>> data = PcbaService
 									.QRYSmtDataMap(Lot);
-
 							for (Map<String, Object> map : data) {
 								PcbaService.InsertSN(map.get("SN").toString(),
 										map.get("UID").toString(),
@@ -814,12 +791,10 @@ public class PcbaInventoryConntroller {
 					}
 				} else { //查不到数据，查OrBitx 72数据库
 					rs = con72db.executeQuery(SqlApi.SelLotData(Lot));
-
 					if (rs.next()) {
 						if (!rs.getString("Pn").startsWith("620")) {
 							return CommonResult.failed("请用对应账号做101入库");
 						}
-
 						SendRecData.setUID(rs.getString("Batch"));
 						SendRecData.setQty(rs.getString("Qty"));
 						SendRecData.setWo(rs.getString("Wo"));
@@ -875,17 +850,14 @@ public class PcbaInventoryConntroller {
 				SendRecDataVo data = new SendRecDataVo();
 				try {
 					rs = con51db.executeQuery(SqlApi.SelLotData(Lot));
-
 					if (rs.next()) {
 						if (!rs.getString("Pn").startsWith("620")) {
 							return CommonResult.failed("请用对应账号做101入库");
 						}
-
 						data.setUID(rs.getString("Batch"));
 						data.setQty(rs.getString("Qty"));
 						data.setWo(rs.getString("Wo"));
 						data.setWoQty(rs.getString("WoQty"));
-
 						if (rs.getString("Pn").endsWith("00DR3") || rs.getString("Pn").indexOf("00DR1")!=-1) { //以00DR3结尾的只能入BS51仓
 							if (Location.equals("BS51")) {
 								data.setSendLocation((!Location.equals("")?Location:rs.getString("sendLocation").trim()));
@@ -901,7 +873,6 @@ public class PcbaInventoryConntroller {
 						}else {
 							data.setSendLocation((!Location.equals("")?Location:rs.getString("sendLocation").trim()));
 						}
-
 						data.setRecLocation(rs.getString("RecLocation").trim());
 						data.setPn(rs.getString("Pn"));
 						data.setWorkcenter("1");
@@ -912,14 +883,11 @@ public class PcbaInventoryConntroller {
 								.toString());
 						data.setFactory(data.getPn().indexOf("00DR1")!=-1 || data.getPn().indexOf("00DR3")!=-1 ? "5000" :"1100");
 						state1 = PcbaService.SendSmtplugin101(data);
-
 						if (state1 > 0) {
 							rs = con51db.executeQuery(SqlApi.SelSmtSnData(Lot));
 							int count = rs.getMetaData().getColumnCount();// 获取列数
-
 							while (rs.next()) {
 								Map map = new HashMap<>();
-
 								for (int i = 1; i <= count; i++) {
 									Object value = rs.getObject(i);
 									Object key = rs.getMetaData()
@@ -928,7 +896,6 @@ public class PcbaInventoryConntroller {
 								}
 								list.add(map);
 							}
-
 							for (int i = 0; i < list.size(); i++) {
 								String b = list.get(i).toString();
 								PcbaService.InsertSN(
@@ -936,19 +903,15 @@ public class PcbaInventoryConntroller {
 										b.substring(5, 24), data.getQty(),
 										data.getWo(), data.getFactory(), User);
 							}
-
 							con51db.close();
-
 							return CommonResult.success("Cob101入库成功");
 						} else {
 							con51db.close();
-
 							return CommonResult.failed("该Lot号已做过101入库(Smt)！");
 						}
 					} else {
 						return CommonResult.failed("没有查询到对应Lot号数据");
 					}
-
 				} catch (Exception e) {
 					con51db.close();
 					e.printStackTrace();
@@ -963,7 +926,6 @@ public class PcbaInventoryConntroller {
 				} else {
 					rs = con51db.executeQuery(SqlApi.SelLotData(Lot));
 				}
-
 				if (rs.next()) {
 					if (!rs.getString("Pn").startsWith("610")) {
 						return CommonResult.failed("请用对应账号做101入库");
@@ -984,30 +946,24 @@ public class PcbaInventoryConntroller {
 							.toString());
 					String flag = Fifo101(Lot, data.getWo(), "PCBA CNC分板下线",
 							"", factory);
-
 					if (flag.equals("true")) {
 						state1 = PcbaService.SendSmtplugin101(data);
 						if (state1 > 0) {
 							state2 = PcbaService.PcbaStorage(data);
-
 							if (state2 > 0) {
 								rs = con72db.executeQuery(SqlApi
 										.SelCobSnData(Lot));
 								int count = rs.getMetaData().getColumnCount();// 获取列数
-
 								while (rs.next()) {
 									Map map = new HashMap<>();
-
 									for (int i = 1; i <= count; i++) {
 										Object value = rs.getObject(i);
 										Object key = rs.getMetaData()
 												.getColumnName(i);
 										map.put(key, value);
 									}
-
 									list.add(map);
 								}
-
 								for (int i = 0; i < list.size(); i++) {
 									String b = list.get(i).toString();
 									PcbaService.InsertSN(
@@ -1016,15 +972,12 @@ public class PcbaInventoryConntroller {
 											data.getWo(), data.getFactory(),
 											User);
 								}
-
 								con72db.close();
-
 								return CommonResult.success("Cob101入库成功");
 							}
 						} else {
 							con72db.close();
 							con51db.close();
-
 							return CommonResult.failed("该Lot号已做过101入库(Cob)！");
 						}
 					} else {
@@ -1040,17 +993,14 @@ public class PcbaInventoryConntroller {
 			}
 		} else if (node.equals("mi")) {
 			SendRecDataVo data = new SendRecDataVo();
-
 			try {
 				if (factory.equals("B1")) {
 					rs = con72db.executeQuery(SqlApi.SelLotData(Lot));
-
 					if (!rs.isBeforeFirst()) {
 						rs = con75db.executeQuery(SqlApi.SelLotData(Lot));
 					}
 				} else {
 					rs = con51db.executeQuery(SqlApi.SelLotData(Lot));
-
 					if (!rs.isBeforeFirst()) {
 						rs = con75db.executeQuery(SqlApi.SelLotData(Lot));
 					}
@@ -1059,7 +1009,6 @@ public class PcbaInventoryConntroller {
 					if (!rs.getString("Pn").startsWith("64")) {
 						return CommonResult.failed("请用对应账号做101入库");
 					}
-
 					data.setUID(rs.getString("Batch"));
 					data.setQty(rs.getString("Qty"));
 					data.setWo(rs.getString("Wo"));
@@ -1074,26 +1023,20 @@ public class PcbaInventoryConntroller {
 					data.setBatch(rs.getString("Batch")
 							.subSequence(13, rs.getString("Batch").length())
 							.toString());
-
 					String flag = Fifo101(Lot, data.getWo(), "", "", factory);
-
 					if (flag.equals("true")) {
 						Pn = PcbaService.specialPn(data.getPn().substring(0, 8)); //查找特殊PN表是否有此型号
-
 						if (Pn != null) { //特殊PN
 							System.err.println("特殊PN："+Lot);
 							// 做101入库(插入过账表)
 							state1 =  PcbaService.SendSmtplugin101(data);
-
 							if (state1 > 0) {
 								state2 = PcbaService.SendMiInsertSpecial(data);
 								state3 = PcbaService.PcbaStorageSpecial(data);
-
 								if (state2 > 0 && state3 > 0) {
 									if (factory.equals("B1")) {
 										rs = con72db.executeQuery(SqlApi
 												.SelMiSnData(Lot));
-
 										if (!rs.isBeforeFirst()) {
 											rs = con75db.executeQuery(SqlApi
 													.SelMiSnData(Lot));
@@ -1102,20 +1045,16 @@ public class PcbaInventoryConntroller {
 										rs = con51db.executeQuery(SqlApi
 												.SelMiSnData(Lot));
 									}
-
 									int count = rs.getMetaData()
 											.getColumnCount();// 获取列数
-
 									while (rs.next()) {
 										Map map = new HashMap<>();
-
 										for (int i = 1; i <= count; i++) {
 											Object value = rs.getObject(i);
 											Object key = rs.getMetaData()
 													.getColumnName(i);
 											map.put(key, value);
 										}
-
 										list.add(map);
 									}
 
@@ -1666,16 +1605,13 @@ public class PcbaInventoryConntroller {
 					}
 				} else {
 					rs1 = con100hr.executeQuery(SqlApi.CobFifo(Wo));
-
 					if (rs1.next()) {
 						rs2 = con72db.executeQuery(SqlApi.CobObFifo(
 								rs1.getString("UID"), Wo, Remark));
-
 						if (!rs2.isBeforeFirst()) {
 							rs2 = con75db.executeQuery(SqlApi.CobObFifo(
 									rs1.getString("UID"), Wo, Remark));
 						}
-
 						if (rs2.next()) {
 							if (Lot.equals(rs2.getString("FGSN"))) {
 								flag = "true";

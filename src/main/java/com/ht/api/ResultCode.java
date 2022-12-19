@@ -11,6 +11,7 @@ public enum ResultCode implements IErrorCode{
     LOGINGFAILED(401,"登入失败"),
     DATAINSERTIONFAILURE(401, "数据已存在！"),
     TAKEDOWN_SUCCESS(300,"库存下架成功"),
+    MODIFY_STORE_SUCCESS(300,"仓位修改成功"),
     EXISTING(401, "已经在库存中!");
  
     /** 定义状态码 */
