@@ -2,17 +2,21 @@ package com.ht.service.impl;
 
 import com.ht.entity.*;
 import com.ht.mapper.TransactionGroupMapper;
+import com.ht.mapper.TransactionLogMapper;
 import com.ht.mapper.TransactionMapper;
 import com.ht.mapper.TransactionSummaryMapper;
 import com.ht.service.MaintainService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author 丁国钊
  * @date 2022-12-19
  */
+@Service
 public class MaintainServiceImpl implements MaintainService {
     @Autowired
     TransactionMapper transactionMapper;
@@ -20,6 +24,8 @@ public class MaintainServiceImpl implements MaintainService {
     TransactionGroupMapper transactionGroupMapper;
     @Autowired
     TransactionSummaryMapper transactionSummaryMapper;
+    @Autowired
+    TransactionLogMapper transactionLogMapper;
 
     /**
      * 根据 UID、过账类型 查过账信息
@@ -50,6 +56,48 @@ public class MaintainServiceImpl implements MaintainService {
         TransactionGroupExample transactionGroupExample = new TransactionGroupExample();
         transactionGroupExample.createCriteria().andTransactionHistoryIdIn(transactionHistoryIds);
         transactionGroupList = transactionGroupMapper.selectByExample(transactionGroupExample);
+
+        return transactionGroupList;
+    }
+
+    /**
+     * 根据 batchId,itemId 获取过账日志
+     *
+     * @param batchId
+     * @param itemId
+     * @return
+     */
+    @Override
+    public List<TransactionLog> getTransferLogInfo(String batchId, Integer itemId) {
+        List<TransactionLog> transactionLogList;
+        TransactionLogExample transactionLogExample = new TransactionLogExample();
+        transactionLogExample.createCriteria().andBatchIdEqualTo(batchId).andItemIdEqualTo(itemId);
+        transactionLogList = transactionLogMapper.selectByExample(transactionLogExample);
+
+        return transactionLogList;
+    }
+
+    /**
+     * 根据 uid,type 获取 TransactionGroupList
+     *
+     * @param uid
+     * @param type
+     * @return
+     */
+    @Override
+    public List<TransactionGroup> getGroupInfo(String uid, String type) {
+        List<Transaction> transactionList;
+        List<TransactionGroup> transactionGroupList;
+        List<String> transactionHistoryIds = new ArrayList<>();
+
+        // 根据 transactionHistoryIds 查 （BatchID + ItemID）
+        transactionList = getTransferInfo(uid, type);
+        for (Transaction transaction : transactionList) {
+            String transactionHistoryId = transaction.getTransactionHistoryId();
+            transactionHistoryIds.add(transactionHistoryId);
+            System.out.println("TransactionHistoryId: " + transactionHistoryId);
+        }
+        transactionGroupList = getGroupInfo(transactionHistoryIds);
 
         return transactionGroupList;
     }

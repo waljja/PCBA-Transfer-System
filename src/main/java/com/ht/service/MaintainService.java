@@ -1,7 +1,8 @@
 package com.ht.service;
 
-import com.ht.entity.*;
-import org.springframework.stereotype.Component;
+import com.ht.entity.Transaction;
+import com.ht.entity.TransactionGroup;
+import com.ht.entity.TransactionLog;
 
 import java.util.List;
 
@@ -9,7 +10,6 @@ import java.util.List;
  * @author 丁国钊
  * @date 2022-12-19
  */
-@Component
 public interface MaintainService {
     /**
      * 根据 UID、过账类型 查过账信息
@@ -18,7 +18,7 @@ public interface MaintainService {
      * @param type
      * @return
      */
-    public List<Transaction> getTransferInfo(String uid, String type);
+    List<Transaction> getTransferInfo(String uid, String type);
 
     /**
      * 根据 transactionHistoryId 查（BatchID + ItemID）
@@ -26,7 +26,25 @@ public interface MaintainService {
      * @param transactionHistoryIds
      * @return
      */
-    public List<TransactionGroup> getGroupInfo(List<String> transactionHistoryIds);
+    List<TransactionGroup> getGroupInfo(List<String> transactionHistoryIds);
+
+    /**
+     * 根据 batchId,itemId 获取过账日志
+     *
+     * @param batchId
+     * @param itemId
+     * @return
+     */
+    List<TransactionLog> getTransferLogInfo(String batchId, Integer itemId);
+
+    /**
+     * 根据 uid,type 获取 TransactionGroupList
+     *
+     * @param uid
+     * @param type
+     * @return
+     */
+    List<TransactionGroup> getGroupInfo(String uid, String type);
 
     /**
      * 根据 transactionHistoryId 更新 Transaction 表仓位
@@ -34,7 +52,7 @@ public interface MaintainService {
      * @param transactionHistoryId
      * @param store
      */
-    public void modifyTransStore(String transactionHistoryId, String store);
+    void modifyTransStore(String transactionHistoryId, String store);
 
     /**
      * 根据（BatchID + ItemID）更新 summary 表的仓位
@@ -43,5 +61,5 @@ public interface MaintainService {
      * @param itemId
      * @param store
      */
-    public void modifySummaryStore(String batchId, Integer itemId, String store);
+    void modifySummaryStore(String batchId, Integer itemId, String store);
 }

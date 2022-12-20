@@ -3,8 +3,7 @@ package com.ht.controller;
 import com.ht.api.CommonResult;
 import com.ht.api.ResultCode;
 import com.ht.entity.*;
-import com.ht.mapper.TransactionGroupMapper;
-import com.ht.mapper.TransactionMapper;
+import com.ht.mapper.TransactionLogMapper;
 import com.ht.mapper.TransactionSummaryMapper;
 import com.ht.service.MaintainService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +11,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * PCB 移交系统日常维护
@@ -26,9 +27,11 @@ import java.util.List;
 @RequestMapping(value = "maintain")
 public class MaintainController {
     @Autowired
+    MaintainService maintainService;
+    @Autowired
     TransactionSummaryMapper transactionSummaryMapper;
     @Autowired
-    MaintainService maintainService;
+    TransactionLogMapper transactionLogMapper;
 
     /**
      * 根据 UID、过账类型 更新 过账表、summary表 的库位
@@ -38,6 +41,7 @@ public class MaintainController {
      * @param store
      *        仓库
      */
+    @ResponseBody
     @GetMapping("/modifyStore/{uid}/{store}/{type}")
     public CommonResult<String> modifyStoreController(@PathVariable("uid") String uid,
                                                       @PathVariable("store") String store,
@@ -79,18 +83,8 @@ public class MaintainController {
      */
     @GetMapping("/transferAgain/{uid}/{type}")
     public void transferAgainController(@PathVariable("uid") String uid, @PathVariable("type") String type) {
-        List<Transaction> transactionList;
-        List<TransactionGroup> transactionGroupList;
-        List<String> transactionHistoryIds = new ArrayList<>();
-
-        // 根据 transactionHistoryIds 查 （BatchID + ItemID）
-        transactionList = maintainService.getTransferInfo(uid, type);
-        for (Transaction transaction : transactionList) {
-            String transactionHistoryId = transaction.getTransactionHistoryId();
-            transactionHistoryIds.add(transactionHistoryId);
-            System.out.println("TransactionHistoryId: " + transactionHistoryId);
-        }
-        transactionGroupList = maintainService.getGroupInfo(transactionHistoryIds);
+        // 获取 batchId itemId
+        List<TransactionGroup> transactionGroupList = maintainService.getGroupInfo(uid, type);
 
         // 更新 summary 表 TransactionResult 为 0 ，重新过账
         for (TransactionGroup transactionGroup : transactionGroupList) {
@@ -102,6 +96,51 @@ public class MaintainController {
             TransactionSummaryExample transactionSummaryExample = new TransactionSummaryExample();
             transactionSummaryExample.createCriteria().andBatchIdEqualTo(batchId).andItemIdEqualTo(itemId);
             transactionSummaryMapper.updateByExampleSelective(transactionSummary, transactionSummaryExample);
+            System.out.println("BatchId: " + batchId + "    ItemId: " + itemId);
+        }
+    }
+
+    /**
+     * 获取过账日志信息
+     *
+     * @param uid
+     * @param type
+     * @return
+     */
+    @ResponseBody
+    @GetMapping("/getTransferLog/{uid}/{type}")
+    public CommonResult<List<TransactionLog>> getTransferLog(@PathVariable("uid") String uid, @PathVariable("type") String type) {
+        List<TransactionGroup> transactionGroupList;
+        List<TransactionLog> transactionLogList =  new ArrayList<>();
+
+        // 获取 batchId itemId
+        transactionGroupList = maintainService.getGroupInfo(uid, type);
+
+        // 获取过账日志
+        for (TransactionGroup transactionGroup : transactionGroupList) {
+            String batchId = transactionGroup.getBatchId();
+            Integer itemId = transactionGroup.getItemId();
+            transactionLogList.addAll(maintainService.getTransferLogInfo(batchId.toLowerCase(Locale.ROOT), itemId));
+            System.out.println("BatchId: " + batchId + "    ItemId: " + itemId);
+        }
+
+        return CommonResult.success(transactionLogList);
+    }
+
+    @GetMapping("/deleteTransferLog/{uid}/{type}")
+    public void deleteTransferLog(@PathVariable("uid") String uid, @PathVariable("type") String type) {
+        List<TransactionGroup> transactionGroupList;
+
+        // 获取 batchId itemId
+        transactionGroupList = maintainService.getGroupInfo(uid, type);
+
+        // s删除过账日志
+        for (TransactionGroup transactionGroup : transactionGroupList) {
+            String batchId = transactionGroup.getBatchId();
+            Integer itemId = transactionGroup.getItemId();
+            TransactionLogExample transactionLogExample = new TransactionLogExample();
+            transactionLogExample.createCriteria().andBatchIdEqualTo(batchId).andItemIdEqualTo(itemId);
+            transactionLogMapper.deleteByExample(transactionLogExample);
             System.out.println("BatchId: " + batchId + "    ItemId: " + itemId);
         }
     }
