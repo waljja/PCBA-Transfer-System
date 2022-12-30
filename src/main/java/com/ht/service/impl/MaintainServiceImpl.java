@@ -103,13 +103,13 @@ public class MaintainServiceImpl implements MaintainService {
     }
 
     /**
-     * 根据 transactionHistoryId 更新 Transaction 表仓位
+     * 根据 transactionHistoryId 更新 Transaction 表 “目标” 仓位
      *
      * @param transactionHistoryId
      * @param store
      */
     @Override
-    public void modifyTransStore(String transactionHistoryId, String store) {
+    public void modifyTransToStore(String transactionHistoryId, String store) {
         Transaction transaction1 = new Transaction();
         transaction1.setERPToStock(store);
         transaction1.setToStock(store);
@@ -117,19 +117,19 @@ public class MaintainServiceImpl implements MaintainService {
         transactionExample1.createCriteria().andTransactionHistoryIdEqualTo(transactionHistoryId);
         int isUpdate = transactionMapper.updateByExampleSelective(transaction1, transactionExample1);
         if (isUpdate != 0) {
-            System.out.println("更新transaction表仓位成功：" + store);
+            System.out.println("更新transaction表目标仓位成功：" + store);
         }
     }
 
     /**
-     * 根据（BatchID + ItemID）更新 summary 表的仓位
+     * 根据（BatchID + ItemID）更新 summary 表的 “目标” 仓位
      *
      * @param batchId
      * @param itemId
      * @param store
      */
     @Override
-    public void modifySummaryStore(String batchId, Integer itemId, String store) {
+    public void modifySummaryToStore(String batchId, Integer itemId, String store) {
         TransactionSummary transactionSummary = new TransactionSummary();
         // 设置仓位
         transactionSummary.setToStock(store);
@@ -137,7 +137,46 @@ public class MaintainServiceImpl implements MaintainService {
         transactionSummaryExample.createCriteria().andBatchIdEqualTo(batchId).andItemIdEqualTo(itemId);
         int isUpdate = transactionSummaryMapper.updateByExampleSelective(transactionSummary, transactionSummaryExample);
         if (isUpdate != 0) {
-            System.out.println("更新summary表仓位成功：" + store);
+            System.out.println("更新summary表目标仓位成功：" + store);
+        }
+    }
+
+    /**
+     * 根据 transactionHistoryId 更新 Transaction 表 “来源” 仓位
+     *
+     * @param transactionHistoryId
+     * @param store
+     */
+    @Override
+    public void modifyTransFromStore(String transactionHistoryId, String store) {
+        Transaction transaction1 = new Transaction();
+        transaction1.setERPFromStock(store);
+        transaction1.setFromStock(store);
+        TransactionExample transactionExample1 = new TransactionExample();
+        transactionExample1.createCriteria().andTransactionHistoryIdEqualTo(transactionHistoryId);
+        int isUpdate = transactionMapper.updateByExampleSelective(transaction1, transactionExample1);
+        if (isUpdate != 0) {
+            System.out.println("更新transaction表来源仓位成功：" + store);
+        }
+    }
+
+    /**
+     * 根据（BatchID + ItemID）更新 summary 表的 “来源” 仓位
+     *
+     * @param batchId
+     * @param itemId
+     * @param store
+     */
+    @Override
+    public void modifySummaryFromStore(String batchId, Integer itemId, String store) {
+        TransactionSummary transactionSummary = new TransactionSummary();
+        // 设置仓位
+        transactionSummary.setFromStock(store);
+        TransactionSummaryExample transactionSummaryExample = new TransactionSummaryExample();
+        transactionSummaryExample.createCriteria().andBatchIdEqualTo(batchId).andItemIdEqualTo(itemId);
+        int isUpdate = transactionSummaryMapper.updateByExampleSelective(transactionSummary, transactionSummaryExample);
+        if (isUpdate != 0) {
+            System.out.println("更新summary表来源仓位成功：" + store);
         }
     }
 }

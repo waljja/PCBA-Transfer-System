@@ -47,19 +47,36 @@ public interface MaintainService {
     List<TransactionGroup> getGroupInfo(String uid, String type);
 
     /**
-     * 根据 transactionHistoryId 更新 Transaction 表仓位
+     * 根据 transactionHistoryId 更新 Transaction 表 目标 仓位
      *
      * @param transactionHistoryId
      * @param store
      */
-    void modifyTransStore(String transactionHistoryId, String store);
+    void modifyTransToStore(String transactionHistoryId, String store);
 
     /**
-     * 根据（BatchID + ItemID）更新 summary 表的仓位
+     * 根据（BatchID + ItemID）更新 summary 表的 目标 仓位
      *
      * @param batchId
      * @param itemId
      * @param store
      */
-    void modifySummaryStore(String batchId, Integer itemId, String store);
+    void modifySummaryToStore(String batchId, Integer itemId, String store);
+
+    /**
+     * 根据 transactionHistoryId 更新 Transaction 表 “来源” 仓位
+     *
+     * @param transactionHistoryId
+     * @param store
+     */
+    void modifyTransFromStore(String transactionHistoryId, String store);
+
+    /**
+     * 根据（BatchID + ItemID）更新 summary 表的 “来源” 仓位
+     *
+     * @param batchId
+     * @param itemId
+     * @param store
+     */
+    void modifySummaryFromStore(String batchId, Integer itemId, String store);
 }
